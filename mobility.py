@@ -48,8 +48,17 @@ def make_array_IVs(source_dir, IVsd, const_gate):
             const_gate = np.column_stack([const_gate, file])
     return IVsd, const_gate            
     
+def plot_ivsd(bias, IVsd, file):
+       
+    rawIVsd = plt.figure()    
+    for i in range(np.size(IVsd,1)-1):
+        plt.plot(bias*1e3, IVsd[:,i+1]*1e6, label=file)
+    plt.xlabel('Vsd(mV)')
+    plt.ylabel('Isd($\mu$A)')
+    #plt.legend()
+    #plt.legend('1100mV', '1200mV','1300mV','1400mV','1500mV', '1600mV','1700mV','1800mV','1900mV','2000mV')
+    plt.show(rawIVsd)
     
-
 
 "Start script"
 
@@ -60,18 +69,11 @@ IVsd, const_gate = make_array_IVs(source_dir, IVsd, const_gate)
 
 
 bias = IVsdnew[:,0] #in V   
-rawIVsd = plt.figure()    
-for i in range(np.size(IVsd,1)-1):
-    plt.plot(bias, IVsd[:,i+1]*1e6, label=file)
-    R = 1/np.polyfit(bias,IVsd[:,i+1],1)[0]
-    Rarr = np.column_stack([Rarr, R])
 
-        
-plt.xlabel('Vsd(mV)')
-plt.ylabel('Isd($\mu$A)')
-#plt.legend()
-#plt.legend('1100mV', '1200mV','1300mV','1400mV','1500mV', '1600mV','1700mV','1800mV','1900mV','2000mV')
-plt.show(rawIVsd)
+plot_ivsd(bias, IVsd, file)
+
+R = 1/np.polyfit(bias,IVsd[:,i+1],1)[0]
+Rarr = np.column_stack([Rarr, R])
         
         
 
@@ -114,7 +116,7 @@ for i in range(np.size(IVg, 0)):
 #Plot resistance from IVsd's
 
 plt.figure()
-plt.scatter(np.linspace(-1.1,-2,10), Rarr[0,1:11])
+#plt.scatter(np.linspace(-1.1,-2,10), Rarr[0,1:11])
 
 
  # check for loop or seperate files
