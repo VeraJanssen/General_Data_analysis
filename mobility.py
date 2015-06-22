@@ -18,37 +18,46 @@ import fnmatch
 
 
 
+#device size
+width = 16e-6       #m
+length = 4e-6       #m
+thickness = 6e-9    #m
+
 #constants
-width = 16e-3       #cm
-length = 4e-3       #cm
-thickness = 6e-6    #cm
-
 e = 1.602e-19       #C
-n = 2.86e12         #holes/cm2
-
-Vsd = (0.5, 0.25, 0,-0.25,-0.5)
+n = 2.86e12         #crystals/cm2
 
 
- # ask for inputs:
-    #working folder
-    #device size
-    #....
+
+Vsd = (0.05, 0.025, 0,-0.025,-0.05)
+
 IVsd = np.empty(297)
+const_gate = 0
 mlin = np.empty(1)
 Rarr = 0
-const_gate = 0
 
 
+"""""""""""""Functions"""""""""""""
+def make_array_IVs(source_dir, IVsd, const_gate):
+
+    for file in os.listdir(source_dir):
+        if fnmatch.fnmatch(file, '*.dat'):
+            print file
+            IVsdnew = np.loadtxt(source_dir + file)
+            IVsd = np.column_stack((IVsd, IVsdnew[:,1]))
+            const_gate = np.column_stack([const_gate, file])
+    return IVsd, const_gate            
+    
+    
+
+
+"Start script"
 
  # open IVsd files from IVsd folder
 source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/IV2/'
 
-for file in os.listdir(source_dir):
-    if fnmatch.fnmatch(file, '*.dat'):
-        print file
-        IVsdnew = np.loadtxt(source_dir + file)
-        IVsd = np.column_stack((IVsd, IVsdnew[:,1]))
-        const_gate = np.column_stack([const_gate, file])
+IVsd, const_gate = make_array_IVs(source_dir, IVsd, const_gate)
+
 
 bias = IVsdnew[:,0] #in V   
 rawIVsd = plt.figure()    
@@ -88,15 +97,15 @@ for i in range(np.size(IVg, 0)):
     mobility = sigma/(e*n)
     
     if i==0:
-        plt.plot(gate,  normIVg*1e9, label = 'Vsd = -500mV' )
+        plt.plot(gate,  normIVg*1e9, label = 'Vsd = -50mV' )
     if i==1:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = -250mV' )
+        plt.plot(gate, normIVg*1e9, label = 'Vsd = -25mV' )
     if i==2:
         plt.plot(gate, normIVg*1e9, label = 'Vsd = 0mV' )
     if i==3:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = 250mV' )
+        plt.plot(gate, normIVg*1e9, label = 'Vsd = 25mV' )
     if i==4:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = 500mV' )
+        plt.plot(gate, normIVg*1e9, label = 'Vsd = 50mV' )
     plt.title('')
     plt.xlabel('V$_{g}$ (V)')
     plt.ylabel('I(nA)')
