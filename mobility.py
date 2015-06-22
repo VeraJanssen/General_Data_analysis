@@ -32,9 +32,10 @@ n = 2.86e12         #crystals/cm2
 
 
 
-Vsd = (0.05, 0.025, 0,-0.025,-0.05)
+Vsd = (0.5, 0.25, 0,-0.25,-0.5)
 
 IVsd = np.empty(297)
+normIVg = np.empty(744)
 const_gate = 0
 mlin = np.empty(1)
 
@@ -74,28 +75,36 @@ def plot_R(bias, IVsd, save_fig):
         plt.savefig(source_dir + 'resistance.png')
         
         
-def plot_IVg(IVg, length, width, save_fig):
+def plot_IVg(IVg, normIVg, length, width, save_fig):
     IVg = np.loadtxt(source_dir + 'IVg/megasweep2.dat') #A
     gate = np.linspace(0.5, -2, np.size(IVg,1)) #V
     f, (raw, norm) = plt.subplots(2, 1, sharey=True)    
     for i in range(np.size(IVg, 0)):
+        norma = IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]    
         #subtract the Vg = 0V (background) curve. Use the middle column. Will give error when the number of measurements is odd (than there is no Vg = 0V) 
-        normIVg = IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]
-        sigma = -(length*normIVg)/(width*0.25*Vsd[i])
-        mobility = sigma/(e*n)
+        normIVg = np.column_stack(norma)
+
     
         raw.plot(gate, IVg[i,:]*1e9)
-#axarr[0].plot(x, y)
-#axarr[0].set_title('Sharing X axis')
-#axarr[1].scatter(x, y)
-        #Ugly labelling hack    
-        norm.plot(gate, normIVg*1e9)
+
+        norm.plot(gate, (IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]) *1e9)
         plt.title('')
         plt.xlabel('V$_{g}$ (V)')
         plt.ylabel('I(nA)')
         norm.legend(loc = 'southeast')
         if save_fig:
             plt.savefig(source_dir + 'IVg.png')
+            
+    return normIVg
+    
+def plot_mobility(normIVg, length, width, Vsd, e, n):
+    gate = np.linspace(0.5, -2, np.size(normIVg))
+    plt.figure()
+    for i in range(np.size(Vsd)):
+        sigma = -(length*normIVg)/(width*0.25*Vsd[i])
+        mobility = sigma/(e*n)
+        plt.plot(gate,mobility)
+    
             
 
 
@@ -115,7 +124,9 @@ plot_R(bias, IVsd, save_figs)
 
  # open IVg files from IVg folder
 
-plot_IVg(IVg, length, width, save_figs)
+normIVg = plot_IVg(IVg, normIVg, length, width, save_figs)
+
+plot_mobility(normIVg, length, width, Vsd, e, n)
 
 
 
