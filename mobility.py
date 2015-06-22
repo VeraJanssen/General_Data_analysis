@@ -52,7 +52,7 @@ def make_array_IVs(source_dir, IVsd, const_gate):
     return IVsd, const_gate            
     
 def plot_ivsd(bias, IVsd, file, save_fig):       
-    rawIVsd = plt.figure()    
+    plt.figure()    
     for i in range(np.size(IVsd,1)-1):
         plt.plot(bias*1e3, IVsd[:,i+1]*1e6, label=file)
     plt.xlabel('Vsd(mV)')
@@ -72,7 +72,34 @@ def plot_R(bias, IVsd, save_fig):
     plt.scatter(np.linspace(-1.1,-2,10), Rarr[0,1:11])
     if save_fig:
         plt.savefig(source_dir + 'resistance.png')
-"Start script"
+        
+        
+def plot_IVg(IVg, length, width, save_fig):
+    IVg = np.loadtxt(source_dir + 'IVg/megasweep2.dat') #A
+    gate = np.linspace(0.5, -2, np.size(IVg,1)) #V
+    f, (raw, norm) = plt.subplots(2, 1, sharey=True)    
+    for i in range(np.size(IVg, 0)):
+        #subtract the Vg = 0V (background) curve. Use the middle column. Will give error when the number of measurements is odd (than there is no Vg = 0V) 
+        normIVg = IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]
+        sigma = -(length*normIVg)/(width*0.25*Vsd[i])
+        mobility = sigma/(e*n)
+    
+        raw.plot(gate, IVg[i,:]*1e9)
+#axarr[0].plot(x, y)
+#axarr[0].set_title('Sharing X axis')
+#axarr[1].scatter(x, y)
+        #Ugly labelling hack    
+        norm.plot(gate, normIVg*1e9)
+        plt.title('')
+        plt.xlabel('V$_{g}$ (V)')
+        plt.ylabel('I(nA)')
+        norm.legend(loc = 'southeast')
+        if save_fig:
+            plt.savefig(source_dir + 'IVg.png')
+            
+
+
+"""""""""""""""Start script"""""""""""""""
 
 
 IVsd, const_gate = make_array_IVs(source_dir, IVsd, const_gate)
@@ -87,41 +114,15 @@ plot_R(bias, IVsd, save_figs)
         
 
  # open IVg files from IVg folder
-IVg = np.loadtxt(source_dir + 'IVg/megasweep2.dat') #A
-gate = np.linspace(0.5, -2, np.size(IVg,1)) #V
 
-lin_region_start = 620
-lin_region_end = 680
+plot_IVg(IVg, length, width, save_figs)
+
+
 
 #rawIVg = plt.figure()
-plt.figure()
-for i in range(np.size(IVg, 0)):
-    #plt.plot(gate[lin_region_start:lin_region_end], IVg[i, lin_region_start:lin_region_end])
-    #subtract the Vg = 0V (background) curve. Use the middle column. Will give error when the number of measurements is odd (than there is no Vg = 0V) 
-    normIVg = IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]
-    
-    mlinnew = np.polyfit(gate[lin_region_start:lin_region_end], normIVg[lin_region_start:lin_region_end], 1)
-    x = np.linspace(-.5, 0, 100)    
-    fit = mlinnew[0]*x+mlinnew[1]
-    #plt.plot(x, fit)    
-    mlin = np.column_stack([mlin, mlinnew[0]]) 
-    sigma = -(length*normIVg)/(width*0.25*Vsd[i])
-    mobility = sigma/(e*n)
 
-    if i==0:
-        plt.plot(gate,  normIVg*1e9, label = 'Vsd = -50mV' )
-    if i==1:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = -25mV' )
-    if i==2:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = 0mV' )
-    if i==3:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = 25mV' )
-    if i==4:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = 50mV' )
-    plt.title('')
-    plt.xlabel('V$_{g}$ (V)')
-    plt.ylabel('I(nA)')
-    plt.legend(loc = 'southeast')
+
+
 
 #Plot resistance from IVsd's
 
