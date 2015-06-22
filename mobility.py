@@ -16,12 +16,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import fnmatch
 
-
+#settings
+source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/'
+save_figs = True
 
 #device size
 width = 16e-6       #m
 length = 4e-6       #m
 thickness = 6e-9    #m
+
 
 #constants
 e = 1.602e-19       #C
@@ -40,15 +43,15 @@ mlin = np.empty(1)
 """""""""""""Functions"""""""""""""
 def make_array_IVs(source_dir, IVsd, const_gate):
 
-    for file in os.listdir(source_dir):
+    for file in os.listdir(source_dir + 'IV2/'):
         if fnmatch.fnmatch(file, '*.dat'):
             print file
-            IVsdnew = np.loadtxt(source_dir + file)
+            IVsdnew = np.loadtxt(source_dir + 'IV2/' + file)
             IVsd = np.column_stack((IVsd, IVsdnew[:,1]))
             const_gate = np.column_stack([const_gate, file])
     return IVsd, const_gate            
     
-def plot_ivsd(bias, IVsd, file):       
+def plot_ivsd(bias, IVsd, file, save_fig):       
     rawIVsd = plt.figure()    
     for i in range(np.size(IVsd,1)-1):
         plt.plot(bias*1e3, IVsd[:,i+1]*1e6, label=file)
@@ -56,36 +59,35 @@ def plot_ivsd(bias, IVsd, file):
     plt.ylabel('Isd($\mu$A)')
     #plt.legend()
     #plt.legend('1100mV', '1200mV','1300mV','1400mV','1500mV', '1600mV','1700mV','1800mV','1900mV','2000mV')
-    plt.show(rawIVsd)
+    if save_fig:
+        plt.savefig(source_dir + 'ivsd.png')
     
 
-def plot_R(bias, IVsd):   
+def plot_R(bias, IVsd, save_fig):   
     Rarr = np.empty(1)
     for i in range(np.size(IVsd,1)-1):
         R = 1/np.polyfit(bias,IVsd[:,i+1],1)[0]
         Rarr = np.column_stack([Rarr, R])
     plt.figure()
     plt.scatter(np.linspace(-1.1,-2,10), Rarr[0,1:11])
-
+    if save_fig:
+        plt.savefig(source_dir + 'resistance.png')
 "Start script"
 
- # open IVsd files from IVsd folder
-source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/IV2/'
 
 IVsd, const_gate = make_array_IVs(source_dir, IVsd, const_gate)
 
 
-#bias = IVsdnew[:,0] #in V   
-plot_ivsd(bias, IVsd, file)
+plot_ivsd(bias, IVsd, file, save_figs)
 
 
-plot_R(bias, IVsd)
+plot_R(bias, IVsd, save_figs)
 
         
         
 
  # open IVg files from IVg folder
-IVg = np.loadtxt('C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/IVg/megasweep2.dat') #A
+IVg = np.loadtxt(source_dir + 'IVg/megasweep2.dat') #A
 gate = np.linspace(0.5, -2, np.size(IVg,1)) #V
 
 lin_region_start = 620
