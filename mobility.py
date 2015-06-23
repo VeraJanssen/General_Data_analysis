@@ -18,7 +18,7 @@ import fnmatch
 
 #settings
 source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/'
-save_figs = True
+save_figs = False
 
 #device size
 width = 16e-6       #m
@@ -74,6 +74,7 @@ def plot_R(bias, IVsd, Rarr, save_fig):
     plt.scatter(np.linspace(-1.1,-2,10), Rarr)
     plt.xlabel('V$_{g}$(V)')
     plt.ylabel('resistance ($\Omega$)')
+    plt.figtext(0.2,0.8,'lowest resistance: '+ str(min(Rarr)) + '$ \Omega$' )
     if save_fig:
         plt.savefig(source_dir + 'resistance.png')
         
@@ -115,6 +116,7 @@ def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
     if save_fig:
         plt.savefig(source_dir + 'mobility.png')
         
+        
    
     
             
@@ -134,28 +136,17 @@ plot_R(bias, IVsd, Rarr, save_figs)
         
         
 
- # open IVg files from IVg folder
-
 normIVg = plot_IVg(IVg, normIVg, length, width, save_figs)
 
 plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
 
+meta_file = open(source_dir + 'fig_META.dat', 'w')
+meta_file.write('Titel: ....')
+meta_file.write('Githash:')
 
+meta_file.close()
 
-#rawIVg = plt.figure()
+import os
+import subprocess
+git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
 
-
-
-
-#Plot resistance from IVsd's
-
-
-
-
- # check for loop or seperate files
-
- # plot both datasets in two figures in same window
-
- # save the figure with foldername, filenames, githash
-
- # calculate mobility, Rsq
