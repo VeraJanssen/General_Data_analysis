@@ -38,6 +38,7 @@ IVsd = np.empty(297)
 normIVg = np.empty(744)
 const_gate = 0
 mlin = np.empty(1)
+Rarr = np.empty(10)
 
 
 
@@ -63,15 +64,16 @@ def plot_ivsd(bias, IVsd, file, save_fig):
         plt.savefig(source_dir + 'ivsd.png')
     
 
-def plot_R(bias, IVsd, save_fig):   
-    Rarr = np.empty(1)
+def plot_R(bias, IVsd, Rarr, save_fig):   
+    #Rarr = 0
     for i in range(np.size(IVsd,1)-1):
         R = 1/np.polyfit(bias,IVsd[:,i+1],1)[0]
-        Rarr = np.column_stack([Rarr, R])
+       
+        Rarr[i] = R#np.column_stack([Rarr, R])
     plt.figure()
-    plt.scatter(np.linspace(-1.1,-2,10), Rarr[0,1:11])
+    plt.scatter(np.linspace(-1.1,-2,10), Rarr)
     if save_fig:
-        plt.savefig(source_dir + 'resistance.png')
+        plt.savefig(source_dir + 'conductivity.png')
         
         
 def plot_IVg(IVg, normIVg, length, width, save_fig):
@@ -121,7 +123,7 @@ IVsd, const_gate = make_array_IVs(source_dir, IVsd, const_gate)
 plot_ivsd(bias, IVsd, file, save_figs)
 
 
-plot_R(bias, IVsd, save_figs)
+plot_R(bias, IVsd, Rarr, save_figs)
 
         
         
