@@ -32,7 +32,7 @@ n = 2.86e12         #crystals/cm2
 
 
 
-Vsd = (0.5, 0.25, 0,-0.25,-0.5)
+Vsd = (-0.05, -0.025, 0, 0.025,0.05) #V
 
 IVsd = np.empty(297)
 normIVg = np.empty(744)
@@ -99,12 +99,14 @@ def plot_IVg(IVg, normIVg, length, width, save_fig):
 def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
     gate = np.linspace(0.5, -2, np.size(normIVg[:,1]))
     plt.figure()
-    for i in range(1,np.size(Vsd)):
-        
-        sigma = -(length*normIVg[:,i])/(width*Vsd[i])
-        mobility = sigma/(e*n)
-        print np.size(gate)        
-        plt.plot(gate,mobility)
+    for i in range(0,np.size(Vsd)):
+        if Vsd[i]!=0:
+            sigma = (length*normIVg[:,i+1])/(width*Vsd[i])
+            mobility = sigma/(e*n)     
+            plt.plot(gate,mobility)
+
+            
+            
     if save_fig:
         plt.savefig(source_dir + 'mobility.png')
         
