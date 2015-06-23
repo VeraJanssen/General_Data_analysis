@@ -32,7 +32,7 @@ n = 2.86e12         #crystals/cm2
 
 
 
-Vsd = (-0.05, -0.025, 0, 0.025,0.05) #V
+Vsd = (-0.05, -0.025, 0, 0.025, 0.05) #V
 
 IVsd = np.empty(297)
 normIVg = np.empty(744)
@@ -72,8 +72,10 @@ def plot_R(bias, IVsd, Rarr, save_fig):
         Rarr[i] = R#np.column_stack([Rarr, R])
     plt.figure()
     plt.scatter(np.linspace(-1.1,-2,10), Rarr)
+    plt.xlabel('V$_{g}$(V)')
+    plt.ylabel('resistance ($\Omega$)')
     if save_fig:
-        plt.savefig(source_dir + 'conductivity.png')
+        plt.savefig(source_dir + 'resistance.png')
         
         
 def plot_IVg(IVg, normIVg, length, width, save_fig):
@@ -93,8 +95,9 @@ def plot_IVg(IVg, normIVg, length, width, save_fig):
         plt.xlabel('V$_{g}$ (V)')
         plt.ylabel('I(nA)')
         norm.legend(loc = 'southeast')
-        if save_fig:
-            plt.savefig(source_dir + 'IVg.png')
+
+    if save_fig:
+        plt.savefig(source_dir + 'IVg.png')
             
     return normIVg[:,1:6]
     
@@ -105,7 +108,10 @@ def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
         if Vsd[i]!=0:
             sigma = (length*normIVg[:,i])/(width*Vsd[i])
             mobility = sigma/(e*n)     
-            plt.plot(gate,mobility)  
+            plt.plot(gate,mobility)
+        plt.xlabel('V$_{g}$(V)')
+        plt.ylabel('mobility (cm$^2$/Vs)')
+
     if save_fig:
         plt.savefig(source_dir + 'mobility.png')
         
