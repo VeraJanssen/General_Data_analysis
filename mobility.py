@@ -46,7 +46,6 @@ def make_array_IVs(source_dir, IVsd, const_gate):
 
     for file in os.listdir(source_dir + 'IV2/'):
         if fnmatch.fnmatch(file, '*.dat'):
-            print file
             IVsdnew = np.loadtxt(source_dir + 'IV2/' + file)
             IVsd = np.column_stack((IVsd, IVsdnew[:,1]))
             const_gate = np.column_stack([const_gate, file])
@@ -82,12 +81,12 @@ def plot_IVg(IVg, normIVg, length, width, save_fig):
     for i in range(np.size(IVg, 0)):
         norma = IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]    
         #subtract the Vg = 0V (background) curve. Use the middle column. Will give error when the number of measurements is odd (than there is no Vg = 0V) 
-        normIVg = np.column_stack(norma)
+        normIVg = np.column_stack((normIVg, norma))
 
     
         raw.plot(gate, IVg[i,:]*1e9)
 
-        norm.plot(gate, (IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]) *1e9)
+        norm.plot(gate, norma *1e9)
         plt.title('')
         plt.xlabel('V$_{g}$ (V)')
         plt.ylabel('I(nA)')
@@ -97,13 +96,19 @@ def plot_IVg(IVg, normIVg, length, width, save_fig):
             
     return normIVg
     
-def plot_mobility(normIVg, length, width, Vsd, e, n):
-    gate = np.linspace(0.5, -2, np.size(normIVg))
+def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
+    gate = np.linspace(0.5, -2, np.size(normIVg[:,1]))
     plt.figure()
-    for i in range(np.size(Vsd)):
-        sigma = -(length*normIVg)/(width*0.25*Vsd[i])
+    for i in range(1,np.size(Vsd)):
+        
+        sigma = -(length*normIVg[:,i])/(width*Vsd[i])
         mobility = sigma/(e*n)
+        print np.size(gate)        
         plt.plot(gate,mobility)
+    if save_fig:
+        plt.savefig(source_dir + 'mobility.png')
+        
+   
     
             
 
@@ -126,7 +131,7 @@ plot_R(bias, IVsd, save_figs)
 
 normIVg = plot_IVg(IVg, normIVg, length, width, save_figs)
 
-plot_mobility(normIVg, length, width, Vsd, e, n)
+plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
 
 
 
