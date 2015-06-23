@@ -64,19 +64,19 @@ def plot_ivsd(bias, IVsd, file, save_fig):
         plt.savefig(source_dir + 'ivsd.png')
     
 
-def plot_R(bias, IVsd, Rarr, save_fig):   
+def plot_R(bias, IVsd, Rarr, width, length, save_fig):   
     #Rarr = 0
     for i in range(np.size(IVsd,1)-1):
-        R = 1/np.polyfit(bias,IVsd[:,i+1],1)[0]
+        R = (1/np.polyfit(bias,IVsd[:,i+1],1)[0])*(width/length) #sheet resistance
        
         Rarr[i] = R#np.column_stack([Rarr, R])
     plt.figure()
     plt.scatter(np.linspace(-1.1,-2,10), Rarr)
     plt.xlabel('V$_{g}$(V)')
-    plt.ylabel('resistance ($\Omega$)')
-    plt.figtext(0.2,0.8,'lowest resistance: '+ str(min(Rarr)) + '$ \Omega$' )
+    plt.ylabel('resistance ($\Omega$ / square)')
+    plt.figtext(0.2,0.8,'lowest resistance: '+ str(min(Rarr)) + '$ \Omega$ / square  ' ) #sheet resistance
     if save_fig:
-        plt.savefig(source_dir + 'resistance.png')
+        plt.savefig(source_dir + 'shresistance.png')
         
         
 def plot_IVg(IVg, normIVg, length, width, save_fig):
@@ -131,7 +131,7 @@ IVsd, const_gate = make_array_IVs(source_dir, IVsd, const_gate)
 plot_ivsd(bias, IVsd, file, save_figs)
 
 
-plot_R(bias, IVsd, Rarr, save_figs)
+plot_R(bias, IVsd, Rarr, width, length,  save_figs)
 
         
         
@@ -140,13 +140,18 @@ normIVg = plot_IVg(IVg, normIVg, length, width, save_figs)
 
 plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
 
+
+#maak txt file aan
 meta_file = open(source_dir + 'fig_META.dat', 'w')
-meta_file.write('Titel: ....')
-meta_file.write('Githash:')
-
-meta_file.close()
-
+#vraag om hash
 import os
 import subprocess
 git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
+#schrijf data in txt
+meta_file.write('Titel: ....')
+meta_file.write('Githash: ....')
+#sluit file
+meta_file.close()
+
+
 
