@@ -94,19 +94,16 @@ def plot_IVg(IVg, normIVg, length, width, save_fig):
         if save_fig:
             plt.savefig(source_dir + 'IVg.png')
             
-    return normIVg
+    return normIVg[:,1:6]
     
 def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
     gate = np.linspace(0.5, -2, np.size(normIVg[:,1]))
     plt.figure()
     for i in range(0,np.size(Vsd)):
         if Vsd[i]!=0:
-            sigma = (length*normIVg[:,i+1])/(width*Vsd[i])
+            sigma = (length*normIVg[:,i])/(width*Vsd[i])
             mobility = sigma/(e*n)     
-            plt.plot(gate,mobility)
-
-            
-            
+            plt.plot(gate,mobility)  
     if save_fig:
         plt.savefig(source_dir + 'mobility.png')
         
