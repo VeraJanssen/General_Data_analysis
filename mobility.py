@@ -79,8 +79,8 @@ def plot_R(bias, IVsd, Rarr, width, length, save_fig):
         plt.savefig(source_dir + 'shresistance.png')
         
         
-def plot_IVg(IVg, normIVg, length, width, save_fig):
-    IVg = np.loadtxt(source_dir + 'IVg/megasweep2.dat') #A
+def plot_IVg(normIVg, length, width, save_fig):
+    IVg = np.loadtxt(source_dir + 'IVg/largegateloop.dat') #A
     gate = np.linspace(0.5, -2, np.size(IVg,1)) #V
     f, (raw, norm) = plt.subplots(2, 1, sharey=True)    
     for i in range(np.size(IVg, 0)):
@@ -136,22 +136,11 @@ plot_R(bias, IVsd, Rarr, width, length,  save_figs)
         
         
 
-normIVg = plot_IVg(IVg, normIVg, length, width, save_figs)
+normIVg = plot_IVg(normIVg, length, width, save_figs)
 
 plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
 
 
-#maak txt file aan
-meta_file = open(source_dir + 'fig_META.dat', 'w')
-#vraag om hash
-import os
-import subprocess
-git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
-#schrijf data in txt
-meta_file.write('Titel: ....')
-meta_file.write('Githash: ....')
-#sluit file
-meta_file.close()
 
 
 
