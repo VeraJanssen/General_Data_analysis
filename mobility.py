@@ -33,14 +33,14 @@ m = 9.11e-31        #kg
 
 
 
-
+length_IVg = np.shape(np.loadtxt(source_dir + 'IVg/megasweep2.dat'))[1]
 Vsd = (-0.05, -0.025, 0, 0.025, 0.05) #V
 bias= np.linspace(-0.05, .05, 297)
 
-IVsd = np.empty(297)
-normIVg = np.empty(np.shape(np.loadtxt(source_dir + 'IVg/megasweep2.dat'))[1])
+
+IVsd = np.empty(length_IVg)
+normIVg = np.empty(length_IVg)
 const_gate = 0
-mlin = np.empty(1)
 Rarr = np.empty(10)
 
 
@@ -62,8 +62,6 @@ def plot_ivsd(bias, IVsd, file, save_fig):
         plt.plot(bias*1e3, IVsd[:,i+1]*1e6, label=file)
     plt.xlabel('Vsd(mV)')
     plt.ylabel('Isd($\mu$A)')
-    #plt.legend()
-    #plt.legend('1100mV', '1200mV','1300mV','1400mV','1500mV', '1600mV','1700mV','1800mV','1900mV','2000mV')
     if save_fig:
         plt.savefig(source_dir + 'ivsd.png')
     
@@ -159,13 +157,6 @@ normIVg = plot_IVg(normIVg, length, width, save_figs)
 sigma = plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
 
 plot_tau(sigma, m, n, e)
-
-
-tau = (m*sigma)/(n*(e**2))
-plt.figure()
-plt.plot(np.linspace(0.5, -2, 744), tau)
-plt.xlabel('V$_{g}$')
-plt.ylabel('$\tau$ (s)')
 
 
 
