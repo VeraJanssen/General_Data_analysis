@@ -17,8 +17,8 @@ import matplotlib.pyplot as plt
 import fnmatch
 
 #settings
-source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/'
-save_figs = False
+source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements_square_lattices/18-6/S1/'
+save_figs = True
 
 #device size
 width = 16e-6       #m
@@ -34,20 +34,22 @@ n = 2.86e12         #crystals/cm2
 
 Vsd = (-0.05, -0.025, 0, 0.025, 0.05) #V
 
-IVsd = np.empty(297)
-normIVg = np.empty(744)
+IVsd = np.empty(59)
+bias = np.linspace(-0.05, 0.05,59)
+normIVg = np.empty(893)
 const_gate = 0
 mlin = np.empty(1)
-Rarr = np.empty(10)
+Rarr = np.empty(12)
 
 
 
 """""""""""""Functions"""""""""""""
 def make_array_IVs(source_dir, IVsd, const_gate):
 
-    for file in os.listdir(source_dir + 'IV2/'):
+    for file in os.listdir(source_dir + 'IV/'):
         if fnmatch.fnmatch(file, '*.dat'):
-            IVsdnew = np.loadtxt(source_dir + 'IV2/' + file)
+            print file
+            IVsdnew = np.loadtxt(source_dir + 'IV/' + file)
             IVsd = np.column_stack((IVsd, IVsdnew[:,1]))
             const_gate = np.column_stack([const_gate, file])
     return IVsd, const_gate            
@@ -71,16 +73,16 @@ def plot_R(bias, IVsd, Rarr, width, length, save_fig):
        
         Rarr[i] = R#np.column_stack([Rarr, R])
     plt.figure()
-    plt.scatter(np.linspace(-1.1,-2,10), Rarr)
+    plt.scatter(np.linspace(0,-1.9,12), Rarr)
     plt.xlabel('V$_{g}$(V)')
     plt.ylabel('resistance ($\Omega$ / square)')
-    plt.figtext(0.2,0.8,'lowest resistance: '+ str(min(Rarr)) + '$ \Omega$ / square  ' ) #sheet resistance
+    plt.figtext(0.2,0.8,'lowest resistance: '+ str(min(Rarr*1e-6)) + 'M$ \Omega$ / square  ' ) #sheet resistance
     if save_fig:
         plt.savefig(source_dir + 'shresistance.png')
         
         
 def plot_IVg(normIVg, length, width, save_fig):
-    IVg = np.loadtxt(source_dir + 'IVg/largegateloop.dat') #A
+    IVg = np.loadtxt(source_dir + 'IVg/Vgn500top2000mVVsdn50to50mV.dat') #A
     gate = np.linspace(0.5, -2, np.size(IVg,1)) #V
     f, (raw, norm) = plt.subplots(2, 1, sharey=True)    
     for i in range(np.size(IVg, 0)):
@@ -98,9 +100,9 @@ def plot_IVg(normIVg, length, width, save_fig):
         norm.legend(loc = 'southeast')
 
     if save_fig:
-        plt.savefig(source_dir + 'IVg.png')
+        plt.savefig(source_dir + 'Vgn500top2000mVVsdn50to50mV.png')
             
-    return normIVg[:,1:6]
+    return normIVg[:,1:11]
     
 def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
     gate = np.linspace(0.5, -2, np.size(normIVg[:,1]))
