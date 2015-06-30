@@ -29,6 +29,8 @@ thickness = 6e-9    #m
 #constants
 e = 1.602e-19       #C
 n = 2.86e12         #crystals/cm2
+m = 9.11e-31        #kg
+
 
 
 
@@ -78,8 +80,8 @@ def plot_R(bias, IVsd, Rarr, width, length, save_fig):
     ax.scatter(np.linspace(-1.1,-2,10) ,Rarr , c='blue', alpha=0.5)
     ax.set_yscale('log')        
     plt.xlabel('V$_{g}$(V)')
-    plt.ylabel('resistance ($\Omega$ / square)')
-    plt.figtext(0.2,0.8,'lowest resistance: '+ str(min(Rarr)) + '$ \Omega$ / square  ' ) #sheet resistance
+    plt.ylabel('sheetresistance ($\Omega$ / square)')
+    plt.figtext(0.2,0.8,'lowest resistance: '+ str(min(Rarr)) + '$ \Omega$ / square ' ) #sheet resistance
     plt.plot()
 
     if save_fig:
@@ -122,9 +124,18 @@ def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
 
     if save_fig:
         plt.savefig(source_dir + 'mobility.png')
+    return sigma
         
         
-   
+        
+def plot_tau(sigma, m, n, e):
+    tau = (m*sigma)/(n*(e**2))
+    plt.figure()
+    plt.plot(np.linspace(0.5, -2, 744), tau)
+    plt.xlabel('V$_{g}$')
+    plt.ylabel('$\tau$ (s)')
+
+        
     
             
 
@@ -145,7 +156,16 @@ plot_R(bias, IVsd, Rarr, width, length,  save_figs)
 
 normIVg = plot_IVg(normIVg, length, width, save_figs)
 
-plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
+sigma = plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
+
+plot_tau(sigma, m, n, e)
+
+
+tau = (m*sigma)/(n*(e**2))
+plt.figure()
+plt.plot(np.linspace(0.5, -2, 744), tau)
+plt.xlabel('V$_{g}$')
+plt.ylabel('$\tau$ (s)')
 
 
 
