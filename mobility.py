@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import fnmatch
 
 #settings
-source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/'
+source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements_square_lattices/Liquid_gate/20-5/'
 save_figs = False
 
 #device size
@@ -33,9 +33,10 @@ n = 2.86e12         #crystals/cm2
 
 
 Vsd = (-0.05, -0.025, 0, 0.025, 0.05) #V
+bias= np.linspace(-0.05, .05, 297)
 
 IVsd = np.empty(297)
-normIVg = np.empty(744)
+normIVg = np.empty(np.shape(np.loadtxt(source_dir + 'IVg/megasweep2.dat'))[1])
 const_gate = 0
 mlin = np.empty(1)
 Rarr = np.empty(10)
@@ -47,6 +48,7 @@ def make_array_IVs(source_dir, IVsd, const_gate):
 
     for file in os.listdir(source_dir + 'IV2/'):
         if fnmatch.fnmatch(file, '*.dat'):
+            print file
             IVsdnew = np.loadtxt(source_dir + 'IV2/' + file)
             IVsd = np.column_stack((IVsd, IVsdnew[:,1]))
             const_gate = np.column_stack([const_gate, file])
@@ -70,17 +72,22 @@ def plot_R(bias, IVsd, Rarr, width, length, save_fig):
         R = (1/np.polyfit(bias,IVsd[:,i+1],1)[0])*(width/length) #sheet resistance
        
         Rarr[i] = R#np.column_stack([Rarr, R])
-    plt.figure()
-    plt.scatter(np.linspace(-1.1,-2,10), Rarr)
+        
+    fig = plt.figure()
+    ax = plt.gca()
+    ax.scatter(np.linspace(-1.1,-2,10) ,Rarr , c='blue', alpha=0.5)
+    ax.set_yscale('log')        
     plt.xlabel('V$_{g}$(V)')
     plt.ylabel('resistance ($\Omega$ / square)')
     plt.figtext(0.2,0.8,'lowest resistance: '+ str(min(Rarr)) + '$ \Omega$ / square  ' ) #sheet resistance
+    plt.plot()
+
     if save_fig:
         plt.savefig(source_dir + 'shresistance.png')
         
         
 def plot_IVg(normIVg, length, width, save_fig):
-    IVg = np.loadtxt(source_dir + 'IVg/largegateloop.dat') #A
+    IVg = np.loadtxt(source_dir + 'IVg/megasweep2.dat') #A
     gate = np.linspace(0.5, -2, np.size(IVg,1)) #V
     f, (raw, norm) = plt.subplots(2, 1, sharey=True)    
     for i in range(np.size(IVg, 0)):
