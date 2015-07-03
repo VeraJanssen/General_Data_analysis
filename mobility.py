@@ -38,7 +38,7 @@ Vsd = (-0.05, -0.025, 0, 0.025, 0.05) #V
 bias= np.linspace(-0.05, .05, 297)
 
 
-IVsd = np.empty(length_IVg)
+IVsd = np.empty(297)
 normIVg = np.empty(length_IVg)
 const_gate = 0
 Rarr = np.empty(10)
@@ -84,7 +84,7 @@ def plot_R(bias, IVsd, Rarr, width, length, save_fig):
 
     if save_fig:
         plt.savefig(source_dir + 'shresistance.png')
-        
+    return Rarr        
         
 def plot_IVg(normIVg, length, width, save_fig):
     IVg = np.loadtxt(source_dir + 'IVg/megasweep2.dat') #A
@@ -147,7 +147,7 @@ IVsd, const_gate = make_array_IVs(source_dir, IVsd, const_gate)
 plot_ivsd(bias, IVsd, file, save_figs)
 
 
-plot_R(bias, IVsd, Rarr, width, length,  save_figs)
+Rarr = plot_R(bias, IVsd, Rarr, width, length,  save_figs)
 
         
         
@@ -157,6 +157,12 @@ normIVg = plot_IVg(normIVg, length, width, save_figs)
 sigma = plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
 
 plot_tau(sigma, m, n, e)
+
+plt.figure()
+mob = 1/(n*e*Rarr)
+plt.scatter(np.linspace(-1.1,-2,np.size(mob)), mob)
+
+
 
 
 

@@ -18,7 +18,7 @@ thickness = 6e-9    #m
 e = 1.602e-19       #C
 n = 2.86e12         #crystals/cm2
 
-source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/'
+source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements_square_lattices/Liquid_gate/20-5/IVg/'
 
 highsd = np.loadtxt(source_dir +'Vb50mV.dat')
 zerosd = np.loadtxt(source_dir +'Vb0mV.dat')
@@ -37,7 +37,7 @@ plt.savefig(source_dir + 'quick_IVg.png')
 
 plt.figure()
 sigmah = (length*highsd[:,1])/(width*0.05)
-mobilityh = sigma/(e*n)     
+mobilityh = sigmah/(e*n)     
 
 
 sigmaz = (length*zerosd[:,1])/(width*0.0)
@@ -46,6 +46,8 @@ mobilityz = sigmaz/(e*n)
 sigmal = (length*lowsd[:,1])/(width*-0.05)
 mobilityl = sigmal/(e*n)    
 
+
+plt.scatter(np.linspace(-1.1,-2,np.size(mob)), mob)
  
 plt.plot(highsd[:,0],mobilityh)
 plt.plot(zerosd[:,0],mobilityz)
@@ -56,3 +58,6 @@ plt.ylabel('mobility(cm$^2$/Vs)')
 
 
 plt.savefig(source_dir + 'mobility_quick_scan.png')
+
+plt.figure()
+mob = 1/(n*e*Rarr)
