@@ -12,6 +12,7 @@ Created on Tue May 26 14:35:41 2015
 @author: verajanssen
 """
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import fnmatch
@@ -47,12 +48,16 @@ Rarr = np.empty(10)
 
 """""""""""""Functions"""""""""""""
 def open_metadata():
-    metadata = open('C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/General_data_analysis_scripts/[META]test1.dat')
-    meta = metadata.read()
-    meta = meta.split('\n\n')
-    metadata = []
-    for i in range(0, np.size(meta)):
-        metadata.append(meta[i].split('\n'))
+    try: 
+        metadata = open('C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/General_data_analysis_scripts/[META]test.dat')
+        meta = metadata.read()
+        meta = meta.split('\n\n')
+        metadata = []
+        for i in range(0, np.size(meta)):
+            metadata.append(meta[i].split('\n'))
+    except IOError:
+        print 'no metadata'
+        metadata = 0
     return metadata
 
 def make_array_IVs(source_dir, IVsd, const_gate):
