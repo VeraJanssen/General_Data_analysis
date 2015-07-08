@@ -47,14 +47,15 @@ sigmal = (length*lowsd[:,1])/(width*-0.05)
 mobilityl = sigmal/(e*n)    
 
 
-plt.scatter(np.linspace(-1.1,-2,np.size(mob)), mob)
+plt.scatter(np.linspace(-1.1,-2,np.size(mob)), mob, label = "from IV's")
  
-plt.plot(highsd[:,0],mobilityh)
+plt.plot(highsd[:,0],mobilityh, label = "V$_{bias}$ = 50mV")
 plt.plot(zerosd[:,0],mobilityz)
-plt.plot(lowsd[:,0], mobilityl)
+plt.plot(lowsd[:,0], mobilityl, label = "V$_{bias}$ = -50mV")
 plt.legend()
 plt.xlabel('V$_g$(V)')
 plt.ylabel('mobility(cm$^2$/Vs)')
+
 
 
 plt.savefig(source_dir + 'mobility_quick_scan.png')

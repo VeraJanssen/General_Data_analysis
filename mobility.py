@@ -28,7 +28,7 @@ thickness = 6e-9    #m
 
 #constants
 e = 1.602e-19       #C
-n = 2.86e12         #crystals/cm2
+n = 2.86e12 *2      #electrons/cm2
 m = 9.11e-31        #kg
 
 
@@ -46,6 +46,15 @@ Rarr = np.empty(10)
 
 
 """""""""""""Functions"""""""""""""
+def open_metadata():
+    metadata = open('C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/General_data_analysis_scripts/[META]test1.dat')
+    meta = metadata.read()
+    meta = meta.split('\n\n')
+    metadata = []
+    for i in range(0, np.size(meta)):
+        metadata.append(meta[i].split('\n'))
+    return metadata
+
 def make_array_IVs(source_dir, IVsd, const_gate):
 
     for file in os.listdir(source_dir + 'IV2/'):
@@ -71,7 +80,7 @@ def plot_R(bias, IVsd, Rarr, width, length, save_fig):
     for i in range(np.size(IVsd,1)-1):
         R = (1/np.polyfit(bias,IVsd[:,i+1],1)[0])*(width/length) #sheet resistance
        
-        Rarr[i] = R#np.column_stack([Rarr, R])
+        Rarr[i] = R     #sheet resistance
         
     fig = plt.figure()
     ax = plt.gca()
@@ -114,7 +123,7 @@ def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
     plt.figure()
     for i in range(0,np.size(Vsd)):
         if Vsd[i]!=0:
-            sigma = (length*normIVg[:,i])/(width*Vsd[i])
+            sigma = (length*normIVg[:,i])/(width*Vsd[i]) #sheet conductivity
             mobility = sigma/(e*n)     
             plt.plot(gate,mobility)
         plt.xlabel('V$_{g}$(V)')
@@ -132,6 +141,7 @@ def plot_tau(sigma, m, n, e):
     plt.plot(np.linspace(0.5, -2, 744), tau)
     plt.xlabel('V$_{g}$')
     plt.ylabel('$\tau$ (s)')
+    
 
         
     
@@ -140,6 +150,8 @@ def plot_tau(sigma, m, n, e):
 
 """""""""""""""Start script"""""""""""""""
 
+
+metadata = open_metadata()
 
 IVsd, const_gate = make_array_IVs(source_dir, IVsd, const_gate)
 
