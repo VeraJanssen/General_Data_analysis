@@ -12,106 +12,176 @@ Created on Tue May 26 14:35:41 2015
 @author: verajanssen
 """
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import fnmatch
 
+#settings
+source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements_square_lattices/Liquid_gate/20-5/'
+save_figs = False
+
+#device size
+width = 16e-6       #m
+length = 4e-6       #m
+thickness = 6e-9    #m
 
 
 #constants
-width = 16e-3       #cm
-length = 4e-3       #cm
-thickness = 6e-6    #cm
-
 e = 1.602e-19       #C
-n = 2.86e12         #holes/cm2
+n = 2.86e12 *2      #electrons/cm2
+m = 9.11e-31        #kg
 
-Vsd = (0.5, 0.25, 0,-0.25,-0.5)
 
 
- # ask for inputs:
-    #working folder
-    #device size
-    #....
+length_IVg = np.shape(np.loadtxt(source_dir + 'IVg/megasweep2.dat'))[1]
+Vsd = (-0.05, -0.025, 0, 0.025, 0.05) #V
+bias= np.linspace(-0.05, .05, 297)
+
+
 IVsd = np.empty(297)
-mlin = np.empty(1)
-Rarr = 0
+normIVg = np.empty(length_IVg)
 const_gate = 0
+Rarr = np.empty(10)
 
 
 
- # open IVsd files from IVsd folder
-source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/IV2/'
+"""""""""""""Functions"""""""""""""
+def open_metadata():
+    try: 
+        metadata = open('C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/General_data_analysis_scripts/[META]test.dat')
+        meta = metadata.read()
+        meta = meta.split('\n\n')
+        metadata = []
+        for i in range(0, np.size(meta)):
+            metadata.append(meta[i].split('\n'))
+    except IOError:
+        print 'no metadata'
+        metadata = 0
+    return metadata
 
-for file in os.listdir(source_dir):
-    if fnmatch.fnmatch(file, '*.dat'):
-        print file
-        IVsdnew = np.loadtxt(source_dir + file)
-        IVsd = np.column_stack((IVsd, IVsdnew[:,1]))
-        const_gate = np.column_stack([const_gate, file])
+def make_array_IVs(source_dir, IVsd, const_gate):
 
-bias = IVsdnew[:,0] #in V   
-rawIVsd = plt.figure()    
-for i in range(np.size(IVsd,1)-1):
-    plt.plot(bias, IVsd[:,i+1]*1e6, label=file)
-    R = 1/np.polyfit(bias,IVsd[:,i+1],1)[0]
-    Rarr = np.column_stack([Rarr, R])
-
-        
-plt.xlabel('Vsd(mV)')
-plt.ylabel('Isd($\mu$A)')
-#plt.legend()
-#plt.legend('1100mV', '1200mV','1300mV','1400mV','1500mV', '1600mV','1700mV','1800mV','1900mV','2000mV')
-plt.show(rawIVsd)
-        
-        
-
- # open IVg files from IVg folder
-IVg = np.loadtxt('C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements square lattices/Liquid gate/20-5/IVg/megasweep2.dat') #A
-gate = np.linspace(0.5, -2, np.size(IVg,1)) #V
-
-lin_region_start = 620
-lin_region_end = 680
-
-#rawIVg = plt.figure()
-for i in range(np.size(IVg, 0)):
-    #plt.plot(gate[lin_region_start:lin_region_end], IVg[i, lin_region_start:lin_region_end])
-    #subtract the Vg = 0V (background) curve. Use the middle column. Will give error when the number of measurements is odd (than there is no Vg = 0V) 
-    normIVg = IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]
+    for file in os.listdir(source_dir + 'IV2/'):
+        if fnmatch.fnmatch(file, '*.dat'):
+            print file
+            IVsdnew = np.loadtxt(source_dir + 'IV2/' + file)
+            IVsd = np.column_stack((IVsd, IVsdnew[:,1]))
+            const_gate = np.column_stack([const_gate, file])
+    return IVsd, const_gate            
     
-    mlinnew = np.polyfit(gate[lin_region_start:lin_region_end], normIVg[lin_region_start:lin_region_end], 1)
-    x = np.linspace(-.5, 0, 100)    
-    fit = mlinnew[0]*x+mlinnew[1]
-    #plt.plot(x, fit)    
-    mlin = np.column_stack([mlin, mlinnew[0]]) 
-    sigma = -(length*normIVg)/(width*0.25*Vsd[i])
-    mobility = sigma/(e*n)
+def plot_ivsd(bias, IVsd, file, save_fig):       
+    plt.figure()    
+    for i in range(np.size(IVsd,1)-1):
+        plt.plot(bias*1e3, IVsd[:,i+1]*1e6, label=file)
+    plt.xlabel('Vsd(mV)')
+    plt.ylabel('Isd($\mu$A)')
+    if save_fig:
+        plt.savefig(source_dir + 'ivsd.png')
     
-    if i==0:
-        plt.plot(gate,  normIVg*1e9, label = 'Vsd = -500mV' )
-    if i==1:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = -250mV' )
-    if i==2:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = 0mV' )
-    if i==3:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = 250mV' )
-    if i==4:
-        plt.plot(gate, normIVg*1e9, label = 'Vsd = 500mV' )
-    plt.title('')
-    plt.xlabel('V$_{g}$ (V)')
-    plt.ylabel('I(nA)')
-    plt.legend(loc = 'southeast')
 
-#Plot resistance from IVsd's
+def plot_R(bias, IVsd, Rarr, width, length, save_fig):   
+    #Rarr = 0
+    for i in range(np.size(IVsd,1)-1):
+        R = (1/np.polyfit(bias,IVsd[:,i+1],1)[0])*(width/length) #sheet resistance
+       
+        Rarr[i] = R     #sheet resistance
+        
+    fig = plt.figure()
+    ax = plt.gca()
+    ax.scatter(np.linspace(-1.1,-2,10) ,Rarr , c='blue', alpha=0.5)
+    ax.set_yscale('log')        
+    plt.xlabel('V$_{g}$(V)')
+    plt.ylabel('sheetresistance ($\Omega$ / square)')
+    plt.figtext(0.2,0.8,'lowest resistance: '+ str(min(Rarr)) + '$ \Omega$ / square ' ) #sheet resistance
+    plt.plot()
+
+    if save_fig:
+        plt.savefig(source_dir + 'shresistance.png')
+    return Rarr        
+        
+def plot_IVg(normIVg, length, width, save_fig):
+    IVg = np.loadtxt(source_dir + 'IVg/megasweep2.dat') #A
+    gate = np.linspace(0.5, -2, np.size(IVg,1)) #V
+    f, (raw, norm) = plt.subplots(2, 1, sharey=True)    
+    for i in range(np.size(IVg, 0)):
+        norma = IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]    
+        #subtract the Vg = 0V (background) curve. Use the middle column. Will give error when the number of measurements is odd (than there is no Vg = 0V) 
+        normIVg = np.column_stack((normIVg, norma))
+
+    
+        raw.plot(gate, IVg[i,:]*1e9)
+
+        norm.plot(gate, norma *1e9)
+        plt.title('')
+        plt.xlabel('V$_{g}$ (V)')
+        plt.ylabel('I(nA)')
+        norm.legend(loc = 'southeast')
+
+    if save_fig:
+        plt.savefig(source_dir + 'IVg.png')
+            
+    return normIVg[:,1:6]
+    
+def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
+    gate = np.linspace(0.5, -2, np.size(normIVg[:,1]))
+    plt.figure()
+    for i in range(0,np.size(Vsd)):
+        if Vsd[i]!=0:
+            sigma = (length*normIVg[:,i])/(width*Vsd[i]) #sheet conductivity
+            mobility = sigma/(e*n)     
+            plt.plot(gate,mobility)
+        plt.xlabel('V$_{g}$(V)')
+        plt.ylabel('mobility (cm$^2$/Vs)')
+
+    if save_fig:
+        plt.savefig(source_dir + 'mobility.png')
+    return sigma
+        
+        
+        
+def plot_tau(sigma, m, n, e):
+    tau = (m*sigma)/(n*(e**2))
+    plt.figure()
+    plt.plot(np.linspace(0.5, -2, 744), tau)
+    plt.xlabel('V$_{g}$')
+    plt.ylabel('$\tau$ (s)')
+    
+
+        
+    
+            
+
+
+"""""""""""""""Start script"""""""""""""""
+
+
+metadata = open_metadata()
+
+IVsd, const_gate = make_array_IVs(source_dir, IVsd, const_gate)
+
+
+plot_ivsd(bias, IVsd, file, save_figs)
+
+
+Rarr = plot_R(bias, IVsd, Rarr, width, length,  save_figs)
+
+        
+        
+
+normIVg = plot_IVg(normIVg, length, width, save_figs)
+
+sigma = plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
+
+plot_tau(sigma, m, n, e)
 
 plt.figure()
-plt.scatter(np.linspace(-1.1,-2,10), Rarr[0,1:11])
+mob = 1/(n*e*Rarr)
+plt.scatter(np.linspace(-1.1,-2,np.size(mob)), mob)
 
 
- # check for loop or seperate files
 
- # plot both datasets in two figures in same window
 
- # save the figure with foldername, filenames, githash
 
- # calculate mobility, Rsq
+
+
