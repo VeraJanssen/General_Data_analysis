@@ -79,14 +79,11 @@ def plot_ivsd(bias, IVsd, file, save_fig):
     if save_fig:
         plt.savefig(source_dir + 'ivsd.png')
     
-
+#Calculates and plots the sheet resisivity from the IV's
 def plot_R(bias, IVsd, Rarr, width, length, save_fig):   
-    #Rarr = 0
     for i in range(np.size(IVsd,1)-1):
-        R = (1/np.polyfit(bias,IVsd[:,i+1],1)[0])*(width/length) #sheet resistance
-       
-        Rarr[i] = R     #sheet resistance
-        
+        R = (1/np.polyfit(bias,IVsd[:,i+1],1)[0])*(width/length) #sheet resistivity
+        Rarr[i] = R     
     fig = plt.figure()
     ax = plt.gca()
     ax.scatter(np.linspace(-1.1,-2,10) ,Rarr , c='blue', alpha=0.5)
@@ -108,10 +105,7 @@ def plot_IVg(normIVg, length, width, save_fig):
         norma = IVg[i, :]-IVg[(np.size(IVg, 0)-1)/2]    
         #subtract the Vg = 0V (background) curve. Use the middle column. Will give error when the number of measurements is odd (than there is no Vg = 0V) 
         normIVg = np.column_stack((normIVg, norma))
-
-    
         raw.plot(gate, IVg[i,:]*1e9)
-
         norm.plot(gate, norma *1e9)
         plt.title('')
         plt.xlabel('V$_{g}$ (V)')
@@ -122,7 +116,8 @@ def plot_IVg(normIVg, length, width, save_fig):
         plt.savefig(source_dir + 'IVg.png')
             
     return normIVg[:,1:6]
-    
+
+#Calculates and plots the mobility from the IVg's    
 def plot_mobility(normIVg, length, width, Vsd, e, n, save_fig):
     gate = np.linspace(0.5, -2, np.size(normIVg[:,1]))
     plt.figure()
@@ -175,6 +170,7 @@ sigma = plot_mobility(normIVg, length, width, Vsd, e, n, save_figs)
 
 plot_tau(sigma, m, n, e)
 
+#Here the mobility from IV's is plotted
 plt.figure()
 mob = 1/(n*e*Rarr)
 plt.scatter(np.linspace(-1.1,-2,np.size(mob)), mob)

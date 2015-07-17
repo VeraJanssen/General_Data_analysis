@@ -16,7 +16,7 @@ thickness = 6e-9    #m
 
 #constants
 e = 1.602e-19       #C
-n = 2.86e12         #crystals/cm2
+n = 2.86e12 *2        #crystals/cm2
 
 source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements_square_lattices/Liquid_gate/20-5/IVg/'
 
