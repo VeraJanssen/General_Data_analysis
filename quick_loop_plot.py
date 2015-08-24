@@ -9,13 +9,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[2Dmat]Liquid_gate_mos2/Device2/Measurements/Chip2/Dev1/[IVsweep]IVsdn100mV_100mV_Vgn30V_30V.dat'
+filename = '[AB]IVg_Vg_n3000_500mV_Vsd_n10mV_10mV_2'
+source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[2Dmat]Liquid_gate_mos2/2015_8_6/Measurements/chip2/DEME_TFSI/' 
+IV = np.loadtxt(source_dir+filename +'.dat')
+start = -3
+end = 1
 
-IV = np.loadtxt(source_dir)
+size = np.shape(IV)[1]
+bias =  np.append(np.linspace(start, end, size/2, endpoint=False), np.linspace(end, start, (size/2))) 
 
-bias =  np.linspace(-0.1, 0.1, 1191)
 
-for i in range(np.size(IV,1)-1):
-        plt.plot(IV[i,0:np.size(IV[i,:])/2]*1e6, label=file)
-        plt.xlabel('Vsd(mV)')
+
+plt.figure()
+for i in range(np.size(IV,0)):
+        plt.plot(bias, IV[i,:]*1e6, label=i)
+        plt.xlabel('Vg(V)')
         plt.ylabel('Isd($\mu$A)')
+        #plt.legend()
+        print i
+        
+plt.savefig(source_dir + filename + '.png')
