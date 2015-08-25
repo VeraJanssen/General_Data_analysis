@@ -9,20 +9,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-filename = '[AB]IVg_Vg_n3000_500mV_Vsd_n10mV_10mV_2'
-source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[2Dmat]Liquid_gate_mos2/2015_8_6/Measurements/chip2/DEME_TFSI/' 
+filename = '[AB]IVg_Vg_n20_20V_Vsd_n10mV_10mV'
+source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[2Dmat]Liquid_gate_mos2/2015_8_6/Measurements/chip1/' 
 IV = np.loadtxt(source_dir+filename +'.dat')
-start = -3
-end = 1
+start = -20
+end = 20
 
 size = np.shape(IV)[1]
-bias =  np.append(np.linspace(start, end, size/2, endpoint=False), np.linspace(end, start, (size/2))) 
+bias =  np.linspace(start, end, size/2) 
 
 
 
 plt.figure()
 for i in range(np.size(IV,0)):
-        plt.plot(bias, IV[i,:]*1e6, label=i)
+        plt.plot(bias, IV[i,0:size/2]*1e6, label=i)
         plt.xlabel('Vg(V)')
         plt.ylabel('Isd($\mu$A)')
         #plt.legend()
