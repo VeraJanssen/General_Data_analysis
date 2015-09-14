@@ -9,22 +9,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-backgate = False
+backgate = True
 
 if backgate == True:
-    filename = '[AB]IVg_Vg_n3000_500mV_Vsd_n10mV_10mV_2'
-    source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[2Dmat]Liquid_gate_mos2/2015_8_6/Measurements/chip2/DEME_TFSI/'
+    filename = '[AB]IVg_Vg_n30_30V_Vsd_n10mV_10mV'
+    source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[2Dmat]Liquid_gate_mos2/2015_8_6/Measurements/chip3/'
     IV = np.loadtxt(source_dir+filename +'.dat')
     start = -30
     end = 30
     
     size = np.shape(IV)[1]/2
     gate =  np.linspace(start, end, size) 
-    bias = [-10*1e-3, -5*1e-3, 0, 5*1e-3, 10e-3]
+    bias = [-10*1e-3, 0, 10e-3]
     C_sio = 1.2e-8 #F/cm2
     L = 2.4e-6 #m
     W = 6.7e-6 #m
-    mobility = np.empty(5)
+    mobility = np.empty(3)
     
     
     
@@ -42,27 +42,27 @@ if backgate == True:
             fit = polynomial(gate)
             if bias[i] != 0:
                 mobility[i] = mlin*(L/W)*(1/(bias[i]*C_sio)) 
-            plt.plot(gate, fit*1e6)
-    plt.text(-15,-0.04,'$\mu_{FE}$ ='+str(round(mobility[0]))+'cm$^{2}$/Vs')
-    plt.text(-15,0.04,'$\mu_{FE}$ ='+str(round(mobility[2]))+'cm$^{2}$/Vs')
+            plt.plot(gate, fit*1e6, '--k')
+    plt.text(-15,-0.08,'$\mu_{FE}$ ='+str(round(mobility[0]*10)/10)+'cm$^{2}$/Vs')
+    plt.text(-15,0.08,'$\mu_{FE}$ ='+str(round(mobility[np.size(mobility)-1]*10)/10)+'cm$^{2}$/Vs')
     plt.savefig(source_dir + filename + '.png')
     
 else:
-    filename = '[AB]IVg_Vg_n3000_500mV_Vsd_n10mV_10mV_2'
-    source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[2Dmat]Liquid_gate_mos2/2015_8_6/Measurements/chip2/DEME_TFSI/' 
+    filename = '[AB_2]IVg_Vg_n3500_1000mV_Vsd_n10mV_10mV'
+    source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[2Dmat]Liquid_gate_mos2/2015_8_6/Measurements/chip3/DEME_TFSI/' 
     IV = np.loadtxt(source_dir+filename +'.dat')
     start = -3.0
     end = 1.0
     
-    mobility = 5.0 #cm2/Vs
+    mobility = 4.0 #cm2/Vs
     
     size = np.shape(IV)[1]/2
     gate =  np.linspace(start, end, size) 
-    bias = [-10*1e-3, -5*1e-3, 0, 5*1e-3, 10e-3]
+    bias = [-10*1e-3, 0, 10e-3]
     
     L = 3e-6 #m
     W = 5.85e-6 #m
-    C = np.empty(5)
+    C = np.empty(3)
     
     
     
@@ -74,7 +74,7 @@ else:
             #plt.legend()
             print i
     
-            coefficients = np.polyfit(gate[int((2.8/4.0)*size):int((3.1/4.0)*size)], IV[i, int((2.8/4.0)*size):int((3.1/4.0)*size)], 1)
+            coefficients = np.polyfit(gate[int((2.9/4.0)*size):int((3.1/4.0)*size)], IV[i, int((2.9/4.0)*size):int((3.1/4.0)*size)], 1)
             mlin = coefficients[0]
             polynomial = np.poly1d(coefficients)
             fit = polynomial(gate)
@@ -93,6 +93,6 @@ else:
             
             
     plt.text(-0.3,-0.3,'$C_{LG}$ ='+str((C[0]))+'F/cm2')
-    plt.text(-0.3,0.3,'$C_{LG}$ ='+str((C[4]))+'F/cm2')
+    plt.text(-0.3,0.3,'$C_{LG}$ ='+str((C[2]))+'F/cm2')
     plt.text(-2.5, 0.35, 'mholes/melectrons = ' + str(mlin_h/mlin))
     plt.savefig(source_dir + filename + '.png')
