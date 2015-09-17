@@ -9,23 +9,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-filename = '[AB]IVg_Vg_n20_20V_Vsd_n10mV_10mV'
-source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[2Dmat]Liquid_gate_mos2/2015_8_6/Measurements/chip1/' 
+filename = 'IIVs_Vg_0V_n500mV_Vsd_n10mV_10mV_afternight'
+source_dir = 'C:/Users/verajanssen/SURFdrive/Werk/Science/Projects/[QDs]Hallbar_and_liquid_gate/measurements_square_lattices/Liquid_gate/9_14_150828_62/stability/' 
 IV = np.loadtxt(source_dir+filename +'.dat')
-start = -20
-end = 20
+start = -10
+end = 10
+fit = np.empty(np.size(IV,0))
 
 size = np.shape(IV)[1]
-bias =  np.linspace(start, end, size/2) 
+bias =  np.linspace(end, start, (size/2)+1) 
 
 
 
 plt.figure()
 for i in range(np.size(IV,0)):
-        plt.plot(bias, IV[i,0:size/2]*1e6, label=i)
-        plt.xlabel('Vg(V)')
-        plt.ylabel('Isd($\mu$A)')
-        #plt.legend()
+        plt.plot(bias, IV[i,size/2:size]*1e9, label=i)
+        plt.xlabel('Vsd(mV)')
+        plt.ylabel('Isd(nA)')
+        #plt.legend('nr:')
         print i
+        plt.text(-9,0.4, filename)
         
-plt.savefig(source_dir + filename + '.png')
+        fit[i] = np.polyfit(bias, IV[i, size/2:size], 1)[0]
+
+        
+plt.savefig(source_dir + filename + 'n500mV_1000mV' + '.png')
+
+
+plt.figure()
+plt.scatter(np.linspace(0, -500, 6), fit)
